@@ -2,14 +2,17 @@ namespace SMC.Yaml
 {
     public class YamlTag
     {
-        public YamlTag(string handle, string prefix)
+        public YamlTag(YamlHandle handle, string tag)
         {
             Handle = handle;
-            Prefix = prefix;
+            Tag = tag;
         }
 
-        public string Handle { get; private set; }
+        public YamlHandle Handle { get; private set; }
+        public string Tag { get; private set; }
 
-        public string Prefix { get; private set; }
-    }
+        public string VerbatimTag { get { return string.Format("!<{0}{1}>", Handle.Prefix, Tag); } }
+
+        public string AbbreviatedTag { get { return string.Format("{0}{1}", Handle.Handle, Tag); } }
+        }
 }

@@ -4,9 +4,16 @@ using System.Collections.Generic;
 
 namespace SMC.Yaml
 {
-    public class YamlMapping : IYamlNode, IDictionary<YamlScalar, IYamlNode>
+    public class YamlTagCollection : ICollection<YamlTag>, IDictionary<string, YamlTag>
     {
-        private readonly IDictionary<YamlScalar, IYamlNode> _internalDictionary = new Dictionary<YamlScalar, IYamlNode>();
+        private readonly IDictionary<string, YamlTag> _tagByVerbatimDictionary;
+        private readonly IDictionary<string, YamlTag> _tagByAbbreviatedDictionary;
+
+        public YamlTagCollection()
+        {
+            _tagByVerbatimDictionary = new Dictionary<string, YamlTag>();
+            _tagByAbbreviatedDictionary = new Dictionary<string, YamlTag>();
+        }
         #region Implementation of IEnumerable
 
         /// <summary>
@@ -16,9 +23,21 @@ namespace SMC.Yaml
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public IEnumerator<KeyValuePair<YamlScalar, IYamlNode>> GetEnumerator()
+        IEnumerator<KeyValuePair<string, YamlTag>> IEnumerable<KeyValuePair<string, YamlTag>>.GetEnumerator()
         {
-            return _internalDictionary.GetEnumerator();
+            return _tagByVerbatimDictionary.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>1</filterpriority>
+        public IEnumerator<YamlTag> GetEnumerator()
+        {
+            return _tagByVerbatimDictionary.Values.GetEnumerator();
         }
 
         /// <summary>
@@ -35,7 +54,7 @@ namespace SMC.Yaml
 
         #endregion
 
-        #region Implementation of ICollection<KeyValuePair<YamlScalar,YamlNode>>
+        #region Implementation of ICollection<YamlTag>
 
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
@@ -43,9 +62,23 @@ namespace SMC.Yaml
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         ///                 </param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
         ///                 </exception>
-        public void Add(KeyValuePair<YamlScalar, IYamlNode> item)
+        public void Add(YamlTag item)
         {
-            _internalDictionary.Add(item);
+            _tagByVerbatimDictionary.Add(item.VerbatimTag, item);
+            _tagByAbbreviatedDictionary.Add(item.AbbreviatedTag, item);
+        }
+
+        /// <summary>
+        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        ///                 </param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+        ///                 </exception>
+        [Obsolete("You should not use this method, it may lead to inconsistent state")]
+        [TerminatesProgram]
+        public void Add(KeyValuePair<string, YamlTag> item)
+        {
+            throw new ApplicationException("Invalid call to IDictionary.Add()");
         }
 
         /// <summary>
@@ -55,7 +88,8 @@ namespace SMC.Yaml
         ///                 </exception>
         public void Clear()
         {
-            _internalDictionary.Clear();
+            _tagByVerbatimDictionary.Clear();
+            _tagByAbbreviatedDictionary.Clear();
         }
 
         /// <summary>
@@ -66,9 +100,9 @@ namespace SMC.Yaml
         /// </returns>
         /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         ///                 </param>
-        public bool Contains(KeyValuePair<YamlScalar, IYamlNode> item)
+        public bool Contains(KeyValuePair<string, YamlTag> item)
         {
-            return _internalDictionary.Contains(item);
+            return _tagByVerbatimDictionary.Contains(item) || _tagByAbbreviatedDictionary.Contains(item);
         }
 
         /// <summary>
@@ -83,12 +117,10 @@ namespace SMC.Yaml
         ///                 <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
         ///                     -or-
         ///                     The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
-        ///                     -or-
-        ///                     Type <paramref name="array"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
         ///                 </exception>
-        public void CopyTo(KeyValuePair<YamlScalar, IYamlNode>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<string, YamlTag>[] array, int arrayIndex)
         {
-            _internalDictionary.CopyTo(array, arrayIndex);
+            _tagByVerbatimDictionary.CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -100,9 +132,54 @@ namespace SMC.Yaml
         /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         ///                 </param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
         ///                 </exception>
-        public bool Remove(KeyValuePair<YamlScalar, IYamlNode> item)
+        public bool Remove(KeyValuePair<string, YamlTag> item)
         {
-            return _internalDictionary.Remove(item);
+            return _tagByVerbatimDictionary.Remove(item) && _tagByAbbreviatedDictionary.Remove(item);
+        }
+
+        /// <summary>
+        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+        /// </summary>
+        /// <returns>
+        /// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+        /// </returns>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        ///                 </param>
+        public bool Contains(YamlTag item)
+        {
+            return _tagByVerbatimDictionary.Values.Contains(item);
+        }
+
+        /// <summary>
+        /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.
+        ///                 </param><param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.
+        ///                 </param><exception cref="T:System.ArgumentNullException"><paramref name="array"/> is null.
+        ///                 </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.
+        ///                 </exception><exception cref="T:System.ArgumentException"><paramref name="array"/> is multidimensional.
+        ///                     -or-
+        ///                 <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
+        ///                     -or-
+        ///                     The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
+        ///                 </exception>
+        public void CopyTo(YamlTag[] array, int arrayIndex)
+        {
+            _tagByVerbatimDictionary.Values.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        /// <returns>
+        /// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </returns>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        ///                 </param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+        ///                 </exception>
+        public bool Remove(YamlTag item)
+        {
+            return _tagByVerbatimDictionary.Remove(item.VerbatimTag) && _tagByAbbreviatedDictionary.Remove(item.AbbreviatedTag);
         }
 
         /// <summary>
@@ -113,7 +190,7 @@ namespace SMC.Yaml
         /// </returns>
         public int Count
         {
-            get { return _internalDictionary.Count; }
+            get { return _tagByVerbatimDictionary.Count; }
         }
 
         /// <summary>
@@ -129,7 +206,7 @@ namespace SMC.Yaml
 
         #endregion
 
-        #region Implementation of IDictionary<YamlScalar,YamlNode>
+        #region Implementation of IDictionary<string,YamlTag>
 
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2"/> contains an element with the specified key.
@@ -140,9 +217,9 @@ namespace SMC.Yaml
         /// <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         ///                 </param><exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.
         ///                 </exception>
-        public bool ContainsKey(YamlScalar key)
+        public bool ContainsKey(string key)
         {
-            return _internalDictionary.ContainsKey(key);
+            return _tagByVerbatimDictionary.ContainsKey(key) || _tagByAbbreviatedDictionary.ContainsKey(key);
         }
 
         /// <summary>
@@ -154,9 +231,11 @@ namespace SMC.Yaml
         ///                 </exception><exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         ///                 </exception><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         ///                 </exception>
-        public void Add(YamlScalar key, IYamlNode value)
+        [Obsolete("You should not use this method, it may lead to inconsistent state")]
+        [TerminatesProgram]
+        public void Add(string key, YamlTag value)
         {
-            _internalDictionary.Add(key, value);
+            throw new ApplicationException("Invald call to IDictionary.Add()");
         }
 
         /// <summary>
@@ -169,9 +248,9 @@ namespace SMC.Yaml
         ///                 </param><exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.
         ///                 </exception><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         ///                 </exception>
-        public bool Remove(YamlScalar key)
+        public bool Remove(string key)
         {
-            return _internalDictionary.Remove(key);
+            return _tagByVerbatimDictionary.Remove(key) && _tagByAbbreviatedDictionary.Remove(key);
         }
 
         /// <summary>
@@ -184,9 +263,9 @@ namespace SMC.Yaml
         ///                 </param><param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value"/> parameter. This parameter is passed uninitialized.
         ///                 </param><exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.
         ///                 </exception>
-        public bool TryGetValue(YamlScalar key, out IYamlNode value)
+        public bool TryGetValue(string key, out YamlTag value)
         {
-            return _internalDictionary.TryGetValue(key, out value);
+            return _tagByVerbatimDictionary.TryGetValue(key, out value);
         }
 
         /// <summary>
@@ -200,10 +279,14 @@ namespace SMC.Yaml
         ///                 </exception><exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key"/> is not found.
         ///                 </exception><exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         ///                 </exception>
-        public IYamlNode this[YamlScalar key]
+        public YamlTag this[string key]
         {
-            get { return _internalDictionary[key]; }
-            set { _internalDictionary[key] = value; }
+            get
+            {
+                return _tagByVerbatimDictionary.ContainsKey(key) ? _tagByVerbatimDictionary[key] : _tagByAbbreviatedDictionary[key];
+            }
+            [TerminatesProgram]
+            set { throw new ApplicationException("Invalid use of IDictionary.this[]"); }
         }
 
         /// <summary>
@@ -212,9 +295,9 @@ namespace SMC.Yaml
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<YamlScalar> Keys
+        public ICollection<string> Keys
         {
-            get { return _internalDictionary.Keys; }
+            get { return _tagByVerbatimDictionary.Keys; }
         }
 
         /// <summary>
@@ -223,16 +306,11 @@ namespace SMC.Yaml
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<IYamlNode> Values
+        public ICollection<YamlTag> Values
         {
-            get { return _internalDictionary.Values; }
+            get { return _tagByVerbatimDictionary.Values; }
         }
 
         #endregion
-
-        public YamlTag Tag
-        {
-            get { throw new NotImplementedException(); }
-        }
     }
 }

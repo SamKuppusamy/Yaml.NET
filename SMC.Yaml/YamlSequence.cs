@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace SMC.Yaml
 {
-    public class YamlSequence : YamlNode, IList<YamlNode>
+    public class YamlSequence : IYamlNode, IList<IYamlNode>
     {
-        private readonly List<YamlNode> _internalList = new List<YamlNode>();
+        private readonly List<IYamlNode> _internalList = new List<IYamlNode>();
 
         #region Implementation of IEnumerable
 
@@ -17,7 +17,7 @@ namespace SMC.Yaml
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public IEnumerator<YamlNode> GetEnumerator()
+        public IEnumerator<IYamlNode> GetEnumerator()
         {
             return _internalList.GetEnumerator();
         }
@@ -44,7 +44,7 @@ namespace SMC.Yaml
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         ///                 </param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
         ///                 </exception>
-        public void Add(YamlNode item)
+        public void Add(IYamlNode item)
         {
             _internalList.Add(item);
         }
@@ -67,7 +67,7 @@ namespace SMC.Yaml
         /// </returns>
         /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         ///                 </param>
-        public bool Contains(YamlNode item)
+        public bool Contains(IYamlNode item)
         {
             return _internalList.Contains(item);
         }
@@ -85,9 +85,9 @@ namespace SMC.Yaml
         ///                     -or-
         ///                     The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
         ///                     -or-
-        ///                     Type <paramref name="T"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
+        ///                     Type <paramref name="array"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
         ///                 </exception>
-        public void CopyTo(YamlNode[] array, int arrayIndex)
+        public void CopyTo(IYamlNode[] array, int arrayIndex)
         {
             _internalList.CopyTo(array, arrayIndex);
         }
@@ -101,9 +101,9 @@ namespace SMC.Yaml
         /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         ///                 </param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
         ///                 </exception>
-        public bool Remove(YamlNode item)
+        public bool Remove(IYamlNode item)
         {
-            _internalList.Remove(item);
+            return _internalList.Remove(item);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace SMC.Yaml
         /// </returns>
         /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.
         ///                 </param>
-        public int IndexOf(YamlNode item)
+        public int IndexOf(IYamlNode item)
         {
             return _internalList.IndexOf(item);
         }
@@ -153,7 +153,7 @@ namespace SMC.Yaml
         ///                 </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
         ///                 </exception><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
         ///                 </exception>
-        public void Insert(int index, YamlNode item)
+        public void Insert(int index, IYamlNode item)
         {
             _internalList.Insert(index, item);
         }
@@ -180,7 +180,7 @@ namespace SMC.Yaml
         ///                 </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
         ///                 </exception><exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
         ///                 </exception>
-        public YamlNode this[int index]
+        public IYamlNode this[int index]
         {
             get { return _internalList[index]; }
             set { _internalList[index] = value; }
@@ -188,7 +188,7 @@ namespace SMC.Yaml
 
         #endregion
 
-        public override YamlTag Tag
+        public YamlTag Tag
         {
             get { throw new NotImplementedException(); }
         }

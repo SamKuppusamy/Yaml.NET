@@ -1,11 +1,17 @@
 namespace SMC.Yaml
 {
-    public abstract class YamlScalar : YamlNode
+    public abstract class YamlScalar : IYamlNode
     {
         
-        public static YamlNode Null
+        public static IYamlNode Null
         {
             get { return null; }
         }
+
+        #region Implementation of IYamlNode
+
+        public abstract YamlTag Tag { get; }
+
+        #endregion
     }
 }

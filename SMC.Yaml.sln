@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMC.Yaml", "SMC.Yaml\SMC.Yaml.csproj", "{E873AD89-1A7C-42F7-9707-08B1C28597BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMC.Yaml.Tests", "SMC.Yaml.Tests\SMC.Yaml.Tests.csproj", "{CA3C772C-1E54-4A8B-8D56-DD90279D2DD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E873AD89-1A7C-42F7-9707-08B1C28597BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E873AD89-1A7C-42F7-9707-08B1C28597BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E873AD89-1A7C-42F7-9707-08B1C28597BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E873AD89-1A7C-42F7-9707-08B1C28597BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA3C772C-1E54-4A8B-8D56-DD90279D2DD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA3C772C-1E54-4A8B-8D56-DD90279D2DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA3C772C-1E54-4A8B-8D56-DD90279D2DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA3C772C-1E54-4A8B-8D56-DD90279D2DD7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

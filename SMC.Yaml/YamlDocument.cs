@@ -2,7 +2,7 @@ using System;
 
 namespace SMC.Yaml
 {
-    public class YamlDocument : IYamlNode, IYamlDocument
+    public class YamlDocument : IYamlDocument
     {
         public YamlDocument()
         {

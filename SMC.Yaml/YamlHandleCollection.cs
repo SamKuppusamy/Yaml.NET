@@ -7,10 +7,12 @@ namespace SMC.Yaml
     public class YamlHandleCollection : ICollection<YamlHandle>, IDictionary<string, YamlHandle>
     {
         private readonly IDictionary<string, YamlHandle> _handleDictionary;
+        private readonly IDictionary< string, YamlHandle > _prefixDictionary;
 
         public YamlHandleCollection()
         {
             _handleDictionary = new Dictionary<string, YamlHandle>();
+            _prefixDictionary = new Dictionary< string, YamlHandle >();
             AddPrimaryAndSecondaryHandles();
         }
 
@@ -54,6 +56,7 @@ namespace SMC.Yaml
         public void Add(YamlHandle item)
         {
             _handleDictionary.Add(item.Handle, item);
+            _prefixDictionary.Add( item.Prefix, item );  
         }
 
         /// <summary>
@@ -65,6 +68,7 @@ namespace SMC.Yaml
         public void Clear()
         {
             _handleDictionary.Clear();
+            _prefixDictionary.Clear();
             // Explicitly add Primary and Secondary
             AddPrimaryAndSecondaryHandles();
         }
@@ -121,7 +125,7 @@ namespace SMC.Yaml
             if (item.Handle == YamlHandle.DefaultPrimaryHandle || item.Handle == YamlHandle.DefaultSecondaryHandle)
                 return false;
 
-            return _handleDictionary.Remove(item.Handle);
+            return _handleDictionary.Remove( item.Handle ) && _prefixDictionary.Remove( item.Prefix );
         }
 
         /// <summary>
@@ -155,9 +159,10 @@ namespace SMC.Yaml
             return _handleDictionary.GetEnumerator();
         }
 
+        [TerminatesProgram]
         public void Add(KeyValuePair<string, YamlHandle> item)
         {
-            _handleDictionary.Add(item);
+            throw new NotSupportedException("Dictionary is read-only");
         }
 
         public bool Contains(KeyValuePair<string, YamlHandle> item)
@@ -170,45 +175,45 @@ namespace SMC.Yaml
             _handleDictionary.CopyTo(array, arrayIndex);
         }
 
+        [TerminatesProgram]
         public bool Remove(KeyValuePair<string, YamlHandle> item)
         {
-            return Remove(item.Value);
+            throw new NotSupportedException("Dictionary is read-only");
         }
 
-        #endregion
+        bool ICollection<KeyValuePair<String, YamlHandle>>.IsReadOnly { get { return true; } }
+
+            #endregion
 
         #region Implementation of IDictionary<string,YamlHandle>
 
         public bool ContainsKey(string key)
         {
-            return _handleDictionary.ContainsKey(key);
+            return _handleDictionary.ContainsKey( key ) || _prefixDictionary.ContainsKey( key );  
         }
 
+        [TerminatesProgram]
         public void Add(string key, YamlHandle value)
         {
-            _handleDictionary.Add(key, value);
+            throw new NotSupportedException("Dictionary is read-only");
         }
 
+        [TerminatesProgram]
         public bool Remove(string key)
         {
-            return _handleDictionary.Remove(key);
+            throw new NotSupportedException("Dictionary is read-only");
         }
 
         public bool TryGetValue(string key, out YamlHandle value)
         {
-            return _handleDictionary.TryGetValue(key, out value);
+            return _handleDictionary.TryGetValue( key, out value ) || _prefixDictionary.TryGetValue( key, out value );
         }
 
         public YamlHandle this[string key]
         {
-            get { return _handleDictionary[key]; }
-            set
-            {
-                if (key == YamlHandle.DefaultPrimaryHandle || key == YamlHandle.DefaultSecondaryHandle)
-                    throw new ArgumentException("Cannot replace Primary or Secondary handles");
-
-                _handleDictionary[key] = value;
-            }
+            get { return _handleDictionary.ContainsKey( key ) ? _handleDictionary[key] : _prefixDictionary[key]; }
+            [TerminatesProgram]
+            set { throw new NotSupportedException( "Dictionary is read-only" ); }
         }
 
         public ICollection<string> Keys

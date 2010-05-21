@@ -74,14 +74,21 @@ namespace SMC.Yaml
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         ///                 </param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
         ///                 </exception>
-        [Obsolete("You should not use this method, it may lead to inconsistent state")]
         [TerminatesProgram]
         public void Add(KeyValuePair<string, YamlTag> item)
         {
-            throw new ApplicationException("Invalid call to IDictionary.Add()");
+            throw new NotSupportedException("Dictionary is read-only");
         }
 
         /// <summary>
+        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
+        /// </returns>
+        bool ICollection<KeyValuePair<String, YamlTag>>.IsReadOnly { get { return true; } }
+
+            /// <summary>
         /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         /// </summary>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only. 
@@ -231,11 +238,10 @@ namespace SMC.Yaml
         ///                 </exception><exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         ///                 </exception><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         ///                 </exception>
-        [Obsolete("You should not use this method, it may lead to inconsistent state")]
         [TerminatesProgram]
         public void Add(string key, YamlTag value)
         {
-            throw new ApplicationException("Invald call to IDictionary.Add()");
+            throw new NotSupportedException( "Dictionary is read-only" );
         }
 
         /// <summary>
@@ -248,9 +254,10 @@ namespace SMC.Yaml
         ///                 </param><exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.
         ///                 </exception><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         ///                 </exception>
+        [TerminatesProgram]
         public bool Remove(string key)
         {
-            return _tagByVerbatimDictionary.Remove(key) && _tagByAbbreviatedDictionary.Remove(key);
+            throw new NotSupportedException("Dictionary is read-only");
         }
 
         /// <summary>
@@ -286,7 +293,7 @@ namespace SMC.Yaml
                 return _tagByVerbatimDictionary.ContainsKey(key) ? _tagByVerbatimDictionary[key] : _tagByAbbreviatedDictionary[key];
             }
             [TerminatesProgram]
-            set { throw new ApplicationException("Invalid use of IDictionary.this[]"); }
+            set { throw new NotSupportedException("Dictionary is read-only"); }
         }
 
         /// <summary>

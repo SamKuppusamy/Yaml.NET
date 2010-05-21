@@ -54,6 +54,9 @@
     <Compile Include="Scalars\YamlFloat.cs" />
     <Compile Include="Scalars\YamlInteger.cs" />
     <Compile Include="Scalars\YamlString.cs" />
+    <Compile Include="Schemas\IYamlSchema.cs" />
+    <Compile Include="Schemas\YamlFailsafeSchema.cs" />
+    <Compile Include="Schemas\YamlSchema.cs" />
     <Compile Include="YamlDocument.cs" />
     <Compile Include="YamlHandle.cs" />
     <Compile Include="YamlMapping.cs" />

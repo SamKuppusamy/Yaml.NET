@@ -1,7 +1,12 @@
 namespace SMC.Yaml
 {
-    public abstract class YamlScalar : IYamlNode
+    public abstract class YamlScalar<T> : IYamlNode
     {
+        public T Value
+        {
+            get;
+            set;
+        }
         
         public static IYamlNode Null
         {

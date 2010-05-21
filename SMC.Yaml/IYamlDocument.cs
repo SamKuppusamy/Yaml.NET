@@ -1,6 +1,6 @@
 ﻿namespace SMC.Yaml
 {
-    public interface IYamlDocument
+    public interface IYamlDocument : IYamlNode
     {
         YamlHandleCollection Handles { get; }
         YamlTagCollection Tags { get; }

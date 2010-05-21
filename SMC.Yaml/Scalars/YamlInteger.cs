@@ -1,8 +1,8 @@
 using System;
 
-namespace SMC.Yaml
+namespace SMC.Yaml.Scalars
 {
-    public class YamlInteger : YamlScalar
+    public class YamlInteger : YamlScalar<int>
     {
         public override YamlTag Tag
         {

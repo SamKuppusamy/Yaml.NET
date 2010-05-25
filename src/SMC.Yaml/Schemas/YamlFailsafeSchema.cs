@@ -1,8 +1,15 @@
+using System;
+
 namespace SMC.Yaml.Schemas
 {
-    public class YamlFailsafeSchema : YamlSchema
+    internal class YamlFailsafeSchema : YamlSchema
     {
-        protected override void PopulateDefaultTags()
+        public YamlFailsafeSchema()
+        {
+            PopulateDefaultTags();
+        }
+
+        protected void PopulateDefaultTags()
         {
             // Maps to a YamlMapping object
             DefaultTags.Add( new YamlTag( DefaultSecondary, "map" ) );
@@ -12,6 +19,11 @@ namespace SMC.Yaml.Schemas
 
             // Maps to a YamlString object
             DefaultTags.Add( new YamlTag( DefaultSecondary, "str" ) );    
+        }
+
+        public override YamlTag ResolveTag(string yamlToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

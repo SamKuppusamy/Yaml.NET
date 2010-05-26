@@ -13,7 +13,7 @@ Yaml Grammar:
 <yaml-stream> ::= <yaml-document-list>
 <yaml-document-list> ::= <yaml-document> | <yaml-document> <yaml-document-list>
 <yaml-document> ::= <yaml-directives> <yaml-content-list> <yaml-document-end>
-<yaml-directives> ::= <yaml-directive-list> "---" | ""
+<yaml-directives> ::= <yaml-directive-list> "---" <end-of-line> | ""
 <yaml-directive-list> ::= <yaml-directive> <yaml-directive-list> | ""
 <yaml-directive> ::= <yaml-directive-yaml> | <yaml-directive-tag>
 <yaml-directive-yaml> ::= "%YAML" <in-line-whitespace> <integer-number> "." <integer-number> <end-of-line> | ""
@@ -21,7 +21,7 @@ Yaml Grammar:
 <yaml-tag-handle> ::= "!" | "!!" | "!" <non-whitespace-word> "!"
 <yaml-tag-prefix> ::= "!" <non-whitespace-word> | <non-whitespace-word>
 <yaml-content-list> ::= <yaml-content> <yaml-content-list> | <yaml-content> <end-of-line>
-<yaml-document-end> ::= "..." | ""
+<yaml-document-end> ::= "..." | <end-of-file>
 
 // Internals of an individual document
 <yaml-content> ::=

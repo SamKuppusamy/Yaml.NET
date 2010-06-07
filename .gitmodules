@@ -1,0 +1,3 @@
+[submodule "extern/Irony"]
+	path = extern/Irony
+	url = git://github.com/stephen-czetty/Irony.git

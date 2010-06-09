@@ -8,6 +8,8 @@ Yaml Grammar:
 <end-of-line> ::= "\r\n" | "\r" | "\n"
 <non-whitespace> ::= 
 <non-whitespace-word> ::= <non-whitespace> | <non-whitespace> <non-whitespace-word>
+<indent> ::= <> // Token output by Irony
+<dedent> ::= <> // Token output by Irony
 
 // Basic document structure
 <yaml-document-list> ::= <yaml-document> | <yaml-document> <yaml-document-list>

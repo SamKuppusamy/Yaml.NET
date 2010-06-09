@@ -1,3 +1,6 @@
-[submodule "extern/Irony"]
+[submodule "Irony"]
 	path = extern/Irony
 	url = git://github.com/stephen-czetty/Irony.git
+[submodule "Machine.Specifications"]
+	path = extern/Machine.Specifications
+	url = git://github.com/stephen-czetty/machine.specifications.git

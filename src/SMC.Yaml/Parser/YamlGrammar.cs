@@ -7,8 +7,9 @@ namespace SMC.Yaml.Parser
     {
         public YamlGrammar()
         {
-            // Terminals
-// ReSharper disable InconsistentNaming
+#region Terminals
+            // ReSharper disable InconsistentNaming
+
             var unsigned_number = new NumberLiteral("Unsigned Number");
             var eol = new NewLineTerminal("Eol");
             var yaml_tag_handle_named_identifier = new StringLiteral("Named Tag Handle", "!", StringOptions.NoEscapes);
@@ -17,7 +18,9 @@ namespace SMC.Yaml.Parser
             var yaml_tag_prefix = new IdentifierTerminal("Tag Prefix");
             yaml_tag_prefix.AddPrefix("!", IdOptions.NameIncludesPrefix);
 
-            // Non-Terminals
+#endregion
+
+#region Non-Terminals
 
             // Documents
             var yaml_document_list = new NonTerminal("Document List");
@@ -39,17 +42,19 @@ namespace SMC.Yaml.Parser
             var yaml_document_content_list = new NonTerminal("Document Content List");
             var yaml_document_content = new NonTerminal("Document Content");
 
-// ReSharper restore InconsistentNaming
-            // Rules
+            // ReSharper restore InconsistentNaming
+#endregion
+
+#region Rules
             Root = yaml_document_list;
 
             // Documents
             yaml_document_list.Rule = MakePlusRule(yaml_document_list, yaml_document_end, yaml_document, TermListOptions.AllowTrailingDelimiter);
             yaml_document.Rule = yaml_directives + yaml_document_content_list;
-            yaml_document_end.Rule = LineStartTerminal + "..." | Eof;
+            yaml_document_end.Rule = LineStartTerminal + "...";
 
             // Directives
-            yaml_directives.Rule = yaml_directive_list + "---" + eol | Empty;
+            yaml_directives.Rule = yaml_directive_list + LineStartTerminal + "---" + eol | Empty;
             yaml_directive_list.Rule = MakeStarRule(yaml_directive_list, eol, yaml_directive);
             yaml_directive.Rule = yaml_directive_yaml | yaml_directive_tag;
             yaml_directive_yaml.Rule = "%YAML" + unsigned_number;
@@ -60,9 +65,11 @@ namespace SMC.Yaml.Parser
             yaml_tag_handle.Rule = bang | bangbang | yaml_tag_handle_named_identifier;
 
             // Document Content
-            yaml_document_content_list.Rule = MakeStarRule(yaml_document_content_list, eol, yaml_document_content);
-
+            yaml_document_content_list.Rule = MakeStarRule(yaml_document_content_list, eol, yaml_document_content, TermListOptions.AllowTrailingDelimiter);
+            yaml_document_content.Rule = Empty;
             // TODO: yaml_document_content
+
+#endregion
         }
 
         public override void CreateTokenFilters(LanguageData language, TokenFilterList filters)

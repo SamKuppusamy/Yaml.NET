@@ -2,6 +2,7 @@ using Irony.Parsing;
 
 namespace SMC.Yaml.Parser
 {
+    [Language("Yaml", "1.2", "Grammar for Yaml Specification 1.2")]
     public class YamlGrammar : Grammar
     {
         public YamlGrammar()
@@ -10,9 +11,11 @@ namespace SMC.Yaml.Parser
 // ReSharper disable InconsistentNaming
             var unsigned_number = new NumberLiteral("Unsigned Number");
             var eol = new NewLineTerminal("Eol");
-            var tag_identifier = new IdentifierTerminal("Tag Identifier");
+            var yaml_tag_handle_named_identifier = new StringLiteral("Named Tag Handle", "!", StringOptions.NoEscapes);
             var bang = ToTerm("!");
             var bangbang = ToTerm("!!");
+            var yaml_tag_prefix = new IdentifierTerminal("Tag Prefix");
+            yaml_tag_prefix.AddPrefix("!", IdOptions.NameIncludesPrefix);
 
             // Non-Terminals
 
@@ -31,7 +34,6 @@ namespace SMC.Yaml.Parser
 
             // Tags
             var yaml_tag_handle = new NonTerminal("Tag Handle");
-            var yaml_tag_prefix = new NonTerminal("Tag Prefix");
 
             // Document Content
             var yaml_document_content_list = new NonTerminal("Document Content List");
@@ -39,6 +41,7 @@ namespace SMC.Yaml.Parser
 
 // ReSharper restore InconsistentNaming
             // Rules
+            Root = yaml_document_list;
 
             // Documents
             yaml_document_list.Rule = MakePlusRule(yaml_document_list, yaml_document_end, yaml_document, TermListOptions.AllowTrailingDelimiter);
@@ -54,13 +57,17 @@ namespace SMC.Yaml.Parser
             yaml_directive_tag.Rule = "%TAG" + yaml_tag_handle + yaml_tag_prefix;
 
             // Tags
-            yaml_tag_handle.Rule = bang | bangbang | bang + tag_identifier + bang; // TODO: How do we force no whitespace?
-            yaml_tag_prefix.Rule = bang + tag_identifier | tag_identifier;
+            yaml_tag_handle.Rule = bang | bangbang | yaml_tag_handle_named_identifier;
 
             // Document Content
             yaml_document_content_list.Rule = MakeStarRule(yaml_document_content_list, eol, yaml_document_content);
 
             // TODO: yaml_document_content
+        }
+
+        public override void CreateTokenFilters(LanguageData language, TokenFilterList filters)
+        {
+            filters.Add(new CodeOutlineFilter(language.GrammarData, OutlineOptions.ProduceIndents, null));
         }
     }
 }

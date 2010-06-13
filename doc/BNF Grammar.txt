@@ -10,6 +10,10 @@ Yaml Grammar:
 <non-whitespace-word> ::= <non-whitespace> | <non-whitespace> <non-whitespace-word>
 <indent> ::= <> // Token output by Irony
 <dedent> ::= <> // Token output by Irony
+<yaml-boolean> ::= "true" | "false"
+<yaml-integer> ::= <digit> <yaml-integer> | <digit>
+<yaml-float> ::= <yaml-integer> "." <yaml-integer>
+<yaml-null> ::= "null"
 
 // Basic document structure
 <yaml-document-list> ::= <yaml-document> | <yaml-document> <yaml-document-list>
@@ -25,4 +29,15 @@ Yaml Grammar:
 <yaml-document-end> ::= "..." | <end-of-file>
 
 // Internals of an individual document
-<yaml-document-content> ::=
+<yaml-document-content> ::= <yaml-scalar> | <yaml-map> | <yaml-list>
+<yaml-scalar> ::= <yaml-boolean> | <yaml-integer> | <yaml-float> | <yaml-string> | <yaml-null>
+<yaml-map> ::= "{" <yaml-map-content-list> "}"
+<yaml-map-content-list> ::= <yaml-map-content> <yaml-map-content-list> | <yaml-map-content>
+<yaml-map-content> ::= <yaml-scalar> ":" <yaml-document-content>
+<yaml-list> ::= "[" <yaml-list-content> "]"
+<yaml-list-content> ::= <yaml-document-content> "," <yaml-list-content> | <yaml-document-content>
+
+// Yaml strings are the most complicated structure in the grammar...  Different rules need
+// to be applied, depending on the prefix and indentation level, etc.
+<yaml-string> ::=
+

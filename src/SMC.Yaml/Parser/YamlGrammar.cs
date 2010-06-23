@@ -67,6 +67,7 @@ namespace SMC.Yaml.Parser
             // Document Content
             var yaml_document_content_list = new NonTerminal( "Document Content List" );
             var yaml_document_content = new NonTerminal( "Document Content" );
+            var yaml_nested_content = new NonTerminal( "Nested Content" );  
             var yaml_scalar = new NonTerminal( "Scalar" );
             var yaml_map = new NonTerminal( "Map" );
             var yaml_map_content_list = new NonTerminal( "Map Content List" );
@@ -106,22 +107,25 @@ namespace SMC.Yaml.Parser
             yaml_tag_handle.Rule = bang | bangbang | yaml_tag_handle_named_identifier;
 
             // Document Content
-            yaml_document_content_list.Rule = MakeStarRule( yaml_document_content_list, eol, yaml_document_content,
+            yaml_document_content_list.Rule = MakeStarRule( yaml_document_content_list, Eos, yaml_document_content,
                                                             TermListOptions.AllowTrailingDelimiter );
-            yaml_document_content.Rule = yaml_scalar | yaml_map | yaml_list;
+            yaml_document_content.Rule = yaml_scalar | yaml_map | yaml_list | Indent;
+            yaml_nested_content.Rule = Indent + yaml_document_content_list + Dedent;
 
             // Scalars
             yaml_scalar.Rule = yaml_boolean | yaml_integer | yaml_float | yaml_string | yaml_null;
 
             // Maps
+            // TODO: I don't think this is quite right...  Not always nested, if it's on a single line.
+            //       Same for lists, below.
             yaml_map.Rule = "{" + yaml_map_content_list + "}";
             yaml_map_content_list.Rule = MakeStarRule( yaml_map_content_list, Eos, yaml_map_content,
                                                        TermListOptions.AllowTrailingDelimiter );
-            yaml_map_content.Rule = yaml_scalar + ":" + yaml_document_content;
+            yaml_map_content.Rule = yaml_scalar + ":" + yaml_nested_content;
 
             // Lists
             yaml_list.Rule = "[" + yaml_list_content + "]";
-            yaml_list_content.Rule = MakeStarRule( yaml_list_content, comma, yaml_document_content );
+            yaml_list_content.Rule = MakeStarRule( yaml_list_content, comma, yaml_nested_content );
 
             // Boolean
             yaml_boolean.Rule = ToTerm( "true" ) | "false";
